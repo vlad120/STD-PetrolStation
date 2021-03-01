@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -116,13 +117,13 @@ class Stocks {
         if (Fuel == null) {
             Fuel = new FuelInfo();
         }
-        System.Diagnostics.Debug.WriteLine(_localFolder);
     }
 
     public static async Task SaveAsync() {
         try {
             StorageFile file = await _localFolder.CreateFileAsync(_settingsFileName, CreationCollisionOption.ReplaceExisting);
             await FileIO.WriteTextAsync(file, JsonConvert.SerializeObject(Fuel));
+            Debug.WriteLine("Stocks saved, fuel: " + Fuel.ToString());
         } catch (FileLoadException) {
             await Alert.ShowAsync(Alert.ERROR, "Произошла ошибка доступа к файлу. Настройки не сохранены!");
         } catch (FileNotFoundException) {
@@ -134,11 +135,16 @@ class Stocks {
         public int Volume92 { get; set; } = 0;
         public int Volume95 { get; set; } = 0;
         public int Volume98 { get; set; } = 0;
-        public int Volume100 { get; set; } = 0;
+        public int VolumeD { get; set; } = 0;
         public double Cost92 { get; set; } = 0d;
         public double Cost95 { get; set; } = 0d;
         public double Cost98 { get; set; } = 0d;
-        public double Cost100 { get; set; } = 0d;
+        public double CostD { get; set; } = 0d;
+
+        public override string ToString() {
+            return $"92=({Volume92}, {Cost92}); 95=({Volume95}, {Cost95}); " +
+                $"98=({Volume98}, {Cost98}); D=({VolumeD}, {CostD});";
+        }
     }
 }
 

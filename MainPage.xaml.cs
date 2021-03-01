@@ -37,7 +37,7 @@ namespace PetrolStation {
             var fuel = Stocks.Fuel;
 
             if (fuel.Volume92 < 1 && fuel.Volume95 < 1 &&
-                fuel.Volume98 < 1 && fuel.Volume100 < 1) {
+                fuel.Volume98 < 1 && fuel.VolumeD < 1) {
                 SetDisabledPanel();
                 return;
             }
@@ -121,13 +121,7 @@ namespace PetrolStation {
         public class State {
             public string FuelChosen { get; set; }
             public int VolumeChosen { get; set; }
-            public double TotalCost { get; set; } 
-
-            public void Clear() {
-                FuelChosen = null;
-                VolumeChosen = 0;
-                TotalCost = 0d;
-            }
+            public double TotalCost { get; set; }
         }
 
         public class Panels {

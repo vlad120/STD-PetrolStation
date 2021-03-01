@@ -48,14 +48,14 @@
             </Button.Content>
         </Button>
 
-        <Button x:Name="fuel100Btn" Margin="200,180,0,0" Width="195" Height="195" Tag="100"
+        <Button x:Name="fuelDBtn" Margin="200,180,0,0" Width="195" Height="195" Tag="D"
                 FontSize="22" VerticalAlignment="Center" HorizontalAlignment="Center" Click="fuelBtn_Click">
             <Button.Content>
                 <StackPanel>
-                    <TextBlock Margin="0,40,0,0" TextAlignment="Center" FontWeight="Bold" FontSize="26" Text="АИ-100"/>
-                    <TextBlock x:Name="fuel100CostBlock" Margin="0,10,0,0" TextAlignment="Center"
+                    <TextBlock Margin="0,40,0,0" TextAlignment="Center" FontWeight="Bold" FontSize="26" Text="Дизель"/>
+                    <TextBlock x:Name="fuelDCostBlock" Margin="0,10,0,0" TextAlignment="Center"
                                FontSize="24" FontStyle="Italic" Text="xx,xx руб/л"/>
-                    <TextBlock x:Name="fuel100VolumeBlock" Margin="0,15,0,0" TextAlignment="Right"
+                    <TextBlock x:Name="fuelDVolumeBlock" Margin="0,15,0,0" TextAlignment="Right"
                                FontSize="20" FontStyle="Italic" Width="160" Text="xxx л"/>
                 </StackPanel>
             </Button.Content>

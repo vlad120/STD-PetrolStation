@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Diagnostics;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -19,12 +20,12 @@ namespace PetrolStation {
             fuel92VolumeBlock.Text = fuel.Volume92 + " л";
             fuel95VolumeBlock.Text = fuel.Volume95 + " л";
             fuel98VolumeBlock.Text = fuel.Volume98 + " л";
-            fuel100VolumeBlock.Text = fuel.Volume100 + " л";
+            fuelDVolumeBlock.Text = fuel.VolumeD + " л";
 
             fuel92CostBlock.Text = fuel.Cost92 + " руб/л";
             fuel95CostBlock.Text = fuel.Cost95 + " руб/л";
             fuel98CostBlock.Text = fuel.Cost98 + " руб/л";
-            fuel100CostBlock.Text = fuel.Cost100 + " руб/л";
+            fuelDCostBlock.Text = fuel.CostD + " руб/л";
 
             if (fuel.Volume92 < 1) fuel92Btn.IsEnabled = false;
             else fuel92Btn.IsEnabled = true;
@@ -35,12 +36,14 @@ namespace PetrolStation {
             if (fuel.Volume98 < 1) fuel98Btn.IsEnabled = false;
             else fuel98Btn.IsEnabled = true;
 
-            if (fuel.Volume100 < 1) fuel100Btn.IsEnabled = false;
-            else fuel100Btn.IsEnabled = true;
+            if (fuel.VolumeD < 1) fuelDBtn.IsEnabled = false;
+            else fuelDBtn.IsEnabled = true;
         }
 
         private void fuelBtn_Click(object sender, RoutedEventArgs e) {
-            App.CurrPages.Main.CurrState.FuelChosen = (sender as Button).Tag as string;
+            string fuelChosen = (sender as Button).Tag as string;
+            App.CurrPages.Main.CurrState.FuelChosen = fuelChosen;
+            Debug.WriteLine("Selected fuel: " + fuelChosen);
             App.CurrPages.Main.SetVolumePanel();
         }
     }

@@ -29,17 +29,17 @@ namespace PetrolStation {
             volume92.Text = fuel.Volume92.ToString();
             volume95.Text = fuel.Volume95.ToString();
             volume98.Text = fuel.Volume98.ToString();
-            volume100.Text = fuel.Volume100.ToString();
+            volumeD.Text = fuel.VolumeD.ToString();
 
             cost92.Text = fuel.Cost92.ToString();
             cost95.Text = fuel.Cost95.ToString();
             cost98.Text = fuel.Cost98.ToString();
-            cost100.Text = fuel.Cost100.ToString();
+            costD.Text = fuel.CostD.ToString();
         }
 
         private async void acceptBtn_Click(object sender, RoutedEventArgs e) {
-            TextBox[] volumeTextBoxes = { volume92, volume95, volume98, volume100 };
-            TextBox[] costTextBoxes = { cost92, cost95, cost98, cost100 };
+            TextBox[] volumeTextBoxes = { volume92, volume95, volume98, volumeD };
+            TextBox[] costTextBoxes = { cost92, cost95, cost98, costD };
             int[] volumes = new int[4];
             double[] costs = new double[4];
 
@@ -73,11 +73,11 @@ namespace PetrolStation {
                 fuel.Volume92 = volumes[0];
                 fuel.Volume95 = volumes[1];
                 fuel.Volume98 = volumes[2];
-                fuel.Volume100 = volumes[3];
+                fuel.VolumeD = volumes[3];
                 fuel.Cost92 = costs[0];
                 fuel.Cost95 = costs[1];
                 fuel.Cost98 = costs[2];
-                fuel.Cost100 = costs[3];
+                fuel.CostD = costs[3];
                 await Stocks.SaveAsync();
                 await Alert.ShowAsync(Alert.NOTIFY, "Данные сохранены!");
             }

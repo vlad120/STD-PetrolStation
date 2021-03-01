@@ -9,6 +9,19 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <TextBlock x:Name="fuelLabel" HorizontalAlignment="Center" Margin="0,-280,0,0" 
+                   Text="[FUEL]" TextWrapping="Wrap" VerticalAlignment="Center" 
+                   FontSize="36" FontWeight="Bold" FontStyle="Italic" Foreground="#FF20AB12"/>
 
+        <TextBlock HorizontalAlignment="Center" Margin="0,-100,0,0" Text="Литры:"
+                   TextWrapping="Wrap" VerticalAlignment="Center" FontSize="28"/>
+        
+        <TextBox x:Name="fuelVolume" HorizontalAlignment="Center" Margin="-50,10,0,0"
+                 VerticalAlignment="Center" Width="160" Height="40" PlaceholderText="от X до X"
+                 FontSize="20" TextChanging="fuelVolume_TextChanging"/>
+
+        <Button x:Name="acceptBtn" FontFamily="Segoe MDL2 Assets" Content="&#xE8FB;"
+                Margin="170,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"
+                Width="40" Height="40" Click="acceptBtn_Click"/>
     </Grid>
 </Page>

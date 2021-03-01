@@ -58,16 +58,16 @@
                      PlaceholderText="руб/л" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"
                      ToolTipService.ToolTip="Цена топлива, рубли за 1 литр"/>
 
-            <!-- АИ-100 -->
+            <!-- ДТ -->
 
-            <TextBlock HorizontalAlignment="Left" Margin="0,184,0,0" Text="АИ-100:"
+            <TextBlock HorizontalAlignment="Left" Margin="0,184,0,0" Text="ДТ:"
                    TextWrapping="Wrap" VerticalAlignment="Top" FontSize="16" FontWeight="Bold"/>
 
-            <TextBox x:Name="volume100" HorizontalAlignment="Left" Margin="100,180,0,0"
+            <TextBox x:Name="volumeD" HorizontalAlignment="Left" Margin="100,180,0,0"
                      PlaceholderText="литры" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"
                      ToolTipService.ToolTip="Объём оставшегося топлива, литры"/>
 
-            <TextBox x:Name="cost100" HorizontalAlignment="Left" Margin="220,180,0,0"
+            <TextBox x:Name="costD" HorizontalAlignment="Left" Margin="220,180,0,0"
                      PlaceholderText="руб/л" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"
                      ToolTipService.ToolTip="Цена топлива, рубли за 1 литр"/>
             
