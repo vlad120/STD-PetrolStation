@@ -104,21 +104,18 @@ class Stocks {
     private static StorageFolder _localFolder = ApplicationData.Current.LocalFolder;
     private static string _settingsFileName = "stocks.json";
 
-    private static FuelInfo _fuelOrigin;
-    private static FuelInfo _fuel;
+    public static FuelInfo Fuel { get; private set; }
 
     public static async Task LoadAsync() {
-        _fuelOrigin = null;
-        _fuel = null;
+        Fuel = null;
         try {
             StorageFile file = await _localFolder.GetFileAsync(_settingsFileName);
-            _fuelOrigin = JsonConvert.DeserializeObject<FuelInfo>(await FileIO.ReadTextAsync(file));
+            Fuel = JsonConvert.DeserializeObject<FuelInfo>(await FileIO.ReadTextAsync(file));
         } catch (Exception) { }
 
         if (Fuel == null) {
-            _fuelOrigin = new FuelInfo();
+            Fuel = new FuelInfo();
         }
-        _fuel = _fuelOrigin.Copy();
         System.Diagnostics.Debug.WriteLine(_localFolder);
     }
 
@@ -133,15 +130,6 @@ class Stocks {
         }
     }
 
-    public static FuelInfo Fuel {
-        get {
-            if (_fuel == null) {
-                _ = LoadAsync();
-            }
-            return _fuel;
-        }
-    }
-
     public class FuelInfo {
         public int Volume92 { get; set; } = 0;
         public int Volume95 { get; set; } = 0;
@@ -151,32 +139,6 @@ class Stocks {
         public double Cost95 { get; set; } = 0d;
         public double Cost98 { get; set; } = 0d;
         public double Cost100 { get; set; } = 0d;
-
-        public FuelInfo Copy() {
-            return new FuelInfo() {
-                Volume92 = Volume92,
-                Volume95 = Volume95,
-                Volume98 = Volume98,
-                Volume100 = Volume100,
-                Cost92 = Cost92,
-                Cost95 = Cost95,
-                Cost98 = Cost98,
-                Cost100 = Cost100,
-            };
-        }
-
-        public bool Equals(FuelInfo other) {
-            return (
-                this.Volume92 == other.Volume92 &&
-                this.Volume95 == other.Volume95 &&
-                this.Volume98 == other.Volume98 &&
-                this.Volume100 == other.Volume100 &&
-                this.Cost92 == other.Cost92 &&
-                this.Cost95 == other.Cost95 &&
-                this.Cost98 == other.Cost98 &&
-                this.Cost100 == other.Cost100
-            );
-        }
     }
 }
 
