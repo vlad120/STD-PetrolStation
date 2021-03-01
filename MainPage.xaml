@@ -11,19 +11,19 @@
     <Grid>
         <SplitView x:Name="splitView" DisplayMode="CompactInline" CompactPaneLength="48">
             <SplitView.Pane>
-                <StackPanel>
-                    <Button x:Name="backBtn" Margin="0,0,0,0" VerticalAlignment="Top" 
+                <Grid>
+                    <Button x:Name="backBtn" x:FieldModifier="public" Margin="0,0,0,0" VerticalAlignment="Top" 
                             FontSize="26" FontFamily="Segoe MDL2 Assets" Content="&#xE72B;" 
                             Width="48" Height="48" HorizontalAlignment="Left" Padding="3,3,3,3" 
                             Click="backBtn_Click" ToolTipService.ToolTip="Назад" 
                             ToolTipService.Placement="Right"/>
 
-                    <Button x:Name="homeBtn" Margin="0,0,0,0" VerticalAlignment="Bottom" 
-                            FontSize="26" FontFamily="Segoe MDL2 Assets" Content="&#xE711;" 
+                    <Button x:Name="homeBtn" x:FieldModifier="public" Margin="0,0,0,0" VerticalAlignment="Bottom" 
+                            FontSize="26" FontFamily="Segoe MDL2 Assets" Content="&#xE80F;" 
                             Width="48" Height="48" HorizontalAlignment="Left" Padding="4,4,4,3" 
                             Click="homeBtn_Click" ToolTipService.ToolTip="Отмена операции" 
                             ToolTipService.Placement="Right"/>
-                </StackPanel>
+                </Grid>
             </SplitView.Pane>
             <SplitView.Content>
                 <Grid>
@@ -46,7 +46,7 @@
                         Click="serviceBtn_Click" ToolTipService.ToolTip="Обслуживание" 
                         ToolTipService.Placement="Left" Opacity="0.3" Canvas.ZIndex="1000"/>
 
-                    <Frame x:Name="IOMainFrame" Grid.Row="1"/>
+                    <Frame x:Name="IOMainFrame" Grid.Row="1" CacheSize="0"/>
                 </Grid>
             </SplitView.Content>
         </SplitView>

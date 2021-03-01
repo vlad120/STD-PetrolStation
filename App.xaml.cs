@@ -100,22 +100,26 @@ namespace PetrolStation {
 }
 
 
-class Settings {
+class Stocks {
     private static StorageFolder _localFolder = ApplicationData.Current.LocalFolder;
-    private static string _settingsFileName = "settings.json";
+    private static string _settingsFileName = "stocks.json";
 
-    public static FuelInfo Fuel { get; private set; }
+    private static FuelInfo _fuelOrigin;
+    private static FuelInfo _fuel;
 
-    public static void Load() {
+    public static async Task LoadAsync() {
+        _fuelOrigin = null;
+        _fuel = null;
         try {
-            Fuel = null;
-            StorageFile file = _localFolder.GetFileAsync(_settingsFileName).AsTask().Result;
-            Fuel = JsonConvert.DeserializeObject<FuelInfo>(FileIO.ReadTextAsync(file).AsTask().Result);
+            StorageFile file = await _localFolder.GetFileAsync(_settingsFileName);
+            _fuelOrigin = JsonConvert.DeserializeObject<FuelInfo>(await FileIO.ReadTextAsync(file));
         } catch (Exception) { }
 
         if (Fuel == null) {
-            Fuel = new FuelInfo();
+            _fuelOrigin = new FuelInfo();
         }
+        _fuel = _fuelOrigin.Copy();
+        System.Diagnostics.Debug.WriteLine(_localFolder);
     }
 
     public static async Task SaveAsync() {
@@ -123,9 +127,18 @@ class Settings {
             StorageFile file = await _localFolder.CreateFileAsync(_settingsFileName, CreationCollisionOption.ReplaceExisting);
             await FileIO.WriteTextAsync(file, JsonConvert.SerializeObject(Fuel));
         } catch (FileLoadException) {
-            await Alert.ShowAsync(Alert.ERROR, "Произошла ошибка доступа к файлу настроек. Настройки не сохранены!");
+            await Alert.ShowAsync(Alert.ERROR, "Произошла ошибка доступа к файлу. Настройки не сохранены!");
         } catch (FileNotFoundException) {
-            await Alert.ShowAsync(Alert.ERROR, "Произошла ошибка доступа к файлу настроек. Настройки не сохранены!");
+            await Alert.ShowAsync(Alert.ERROR, "Произошла ошибка доступа к файлу. Настройки не сохранены!");
+        }
+    }
+
+    public static FuelInfo Fuel {
+        get {
+            if (_fuel == null) {
+                _ = LoadAsync();
+            }
+            return _fuel;
         }
     }
 
@@ -138,6 +151,32 @@ class Settings {
         public double Cost95 { get; set; } = 0d;
         public double Cost98 { get; set; } = 0d;
         public double Cost100 { get; set; } = 0d;
+
+        public FuelInfo Copy() {
+            return new FuelInfo() {
+                Volume92 = Volume92,
+                Volume95 = Volume95,
+                Volume98 = Volume98,
+                Volume100 = Volume100,
+                Cost92 = Cost92,
+                Cost95 = Cost95,
+                Cost98 = Cost98,
+                Cost100 = Cost100,
+            };
+        }
+
+        public bool Equals(FuelInfo other) {
+            return (
+                this.Volume92 == other.Volume92 &&
+                this.Volume95 == other.Volume95 &&
+                this.Volume98 == other.Volume98 &&
+                this.Volume100 == other.Volume100 &&
+                this.Cost92 == other.Cost92 &&
+                this.Cost95 == other.Cost95 &&
+                this.Cost98 == other.Cost98 &&
+                this.Cost100 == other.Cost100
+            );
+        }
     }
 }
 

@@ -28,34 +28,81 @@ namespace PetrolStation {
 
             this.CurrPanels = new Panels();
             this.CurrState = new State();
+            
+            SetStartPanel();
         }
 
-        public void SetPanel(System.Type typeOfPage) {
-            IOMainFrame.Navigate(typeOfPage);
+        public void SetStartPanel() {
+            var fuel = Stocks.Fuel;
+
+            if (fuel.Volume92 < 1 && fuel.Volume95 < 1 &&
+                fuel.Volume98 < 1 && fuel.Volume100 < 1) {
+                SetDisabledPanel();
+                return;
+            }
+
+            IOMainFrame.Navigate(typeof(StartPanel));
+
+            backBtn.IsEnabled = false;
+            homeBtn.IsEnabled = false;
+            serviceBtn.IsEnabled = true;
+
+            CurrState.FuelChosen = null;
+            CurrState.VolumeChosen = 0;
+            CurrState.TotalCost = 0;
         }
 
-        public void SetPrevPanel() {
-            try {
-                IOMainFrame.GoBack();
-            } catch (COMException) {}
+        public void SetDisabledPanel() {
+            IOMainFrame.Navigate(typeof(DisabledPanel));
+
+            backBtn.IsEnabled = false;
+            homeBtn.IsEnabled = false;
+            serviceBtn.IsEnabled = true;
+
+            CurrState.FuelChosen = null;
+            CurrState.VolumeChosen = 0;
+            CurrState.TotalCost = 0;
         }
 
-        public void ClearNavigateCache() {
-            int cs = IOMainFrame.CacheSize;
-            IOMainFrame.CacheSize = 0;
-            IOMainFrame.CacheSize = cs;
+        public void SetVolumePanel() {
+            IOMainFrame.Navigate(typeof(VolumePanel));
+
+            backBtn.IsEnabled = true;
+            homeBtn.IsEnabled = true;
+            serviceBtn.IsEnabled = false;
+
+            CurrState.VolumeChosen = 0;
+            CurrState.TotalCost = 0;
+        }
+
+        public void SetPaymentPanel() {
+            IOMainFrame.Navigate(typeof(PaymentPanel));
+
+            backBtn.IsEnabled = true;
+            homeBtn.IsEnabled = true;
+            serviceBtn.IsEnabled = false;
+        }
+
+        private void backBtn_Click(object sender, RoutedEventArgs e) {
+            var pt = IOMainFrame.CurrentSourcePageType;
+            if (pt == PanelTypes.Volume) {
+                SetStartPanel();
+            }
+            else if (pt == PanelTypes.Payment) {
+                SetVolumePanel();
+            }
+            // ...
+            else {
+                SetStartPanel();
+            }
+        }
+
+        private void homeBtn_Click(object sender, RoutedEventArgs e) {
+            SetStartPanel();
         }
 
         private void serviceBtn_Click(object sender, RoutedEventArgs e) {
 
-        }
-
-        private void backBtn_Click(object sender, RoutedEventArgs e) {
-            SetPrevPanel();
-        }
-
-        private void homeBtn_Click(object sender, RoutedEventArgs e) {
-            SetPanel(typeof(StartPanel));
         }
 
         public class State {
@@ -72,6 +119,17 @@ namespace PetrolStation {
 
         public class Panels {
             public StartPanel Start { get; set; }
+            public DisabledPanel Disabled { get; set; }
+            public VolumePanel Volume { get; set; }
+            public PaymentPanel Payment { get; set; }
+            // ...
+        }
+
+        public class PanelTypes {
+            public static Type Start = typeof(StartPanel);
+            public static Type Disabled = typeof(DisabledPanel);
+            public static Type Volume = typeof(VolumePanel);
+            public static Type Payment = typeof(PaymentPanel);
             // ...
         }
     }
