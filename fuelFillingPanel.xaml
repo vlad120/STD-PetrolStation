@@ -1,0 +1,41 @@
+﻿<Page
+    x:Class="PetrolStation.fuelFillingPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PetrolStation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <TextBlock x:Name="fuelLabel" HorizontalAlignment="Center" Margin="0,-280,0,0" 
+                   Text="[ТОПЛИВО] (XX л)" TextWrapping="Wrap" VerticalAlignment="Center" 
+                   FontSize="36" FontWeight="Bold" FontStyle="Italic" Foreground="#FF20AB12"/>
+        
+        <TextBlock x:Name="fillingStatus" HorizontalAlignment="Center"
+                   Margin="0,-140,0,0" Text="[Статус]" VerticalAlignment="Center"
+                   FontSize="24" FontWeight="Bold" FontStyle="Italic"/>
+        
+        <ProgressBar x:Name="progressBar" Minimum="0" Maximum="100"
+                     Width="400" Height="30" HorizontalAlignment="Center" Margin="0,-50,0,0"/>
+
+        <Button x:Name="startBtn" Margin="-160,80,0,0" VerticalAlignment="Center" 
+                FontSize="26" FontFamily="Segoe MDL2 Assets" Content="&#xEDB5;"
+                Width="48" Height="48" HorizontalAlignment="Center" Padding="3,4,3,3" 
+                Click="startBtn_Click" ToolTipService.ToolTip="Начать/продолжить" 
+                ToolTipService.Placement="Bottom"/>
+
+        <Button x:Name="pauseBtn" Margin="0,80,0,0" VerticalAlignment="Center" 
+                FontSize="26" FontFamily="Segoe MDL2 Assets" Content="&#xEDB4;"
+                Width="48" Height="48" HorizontalAlignment="Center" Padding="3,4,3,3" 
+                Click="pauseBtn_Click" ToolTipService.ToolTip="Приостановить"
+                ToolTipService.Placement="Bottom"/>
+
+        <Button x:Name="stopBtn" Margin="160,80,0,0" VerticalAlignment="Center" 
+                FontSize="26" FontFamily="Segoe MDL2 Assets" Content="&#xE71A;"
+                Width="48" Height="48" HorizontalAlignment="Center" Padding="3,4,3,3" 
+                Click="stopBtn_Click" ToolTipService.ToolTip="Завершить досрочно"
+                ToolTipService.Placement="Bottom"/>
+    </Grid>
+</Page>

@@ -34,62 +34,75 @@ namespace PetrolStation {
 
         public async void SetStartPanel() {
             await Stocks.LoadAsync();
-            var fuel = Stocks.Fuel;
 
-            if (fuel.Volume92 < 1 && fuel.Volume95 < 1 &&
-                fuel.Volume98 < 1 && fuel.VolumeD < 1) {
+            bool ok = false;
+            foreach (var fuel in Stocks.FuelInfo.AllFuel) {
+                if (fuel.AvailVolume >= 1) {
+                    ok = true;
+                    break;
+                }
+            }
+            if (!ok) {
                 SetDisabledPanel();
                 return;
             }
 
-            IOMainFrame.Navigate(PanelTypes.Start);
-
             backBtn.IsEnabled = false;
             homeBtn.IsEnabled = false;
             serviceBtn.Visibility = Visibility.Visible;
 
             CurrState.FuelChosen = null;
             CurrState.Reserve = null;
+
+            IOMainFrame.Navigate(PanelTypes.Start);
         }
 
         public void SetDisabledPanel() {
-            IOMainFrame.Navigate(PanelTypes.Disabled);
-
             backBtn.IsEnabled = false;
             homeBtn.IsEnabled = false;
             serviceBtn.Visibility = Visibility.Visible;
 
             CurrState.FuelChosen = null;
             CurrState.Reserve = null;
+
+            IOMainFrame.Navigate(PanelTypes.Disabled);
         }
 
         public void SetServicePanel() {
-            IOMainFrame.Navigate(PanelTypes.Service);
-
             backBtn.IsEnabled = false;
             homeBtn.IsEnabled = true;
             serviceBtn.Visibility = Visibility.Collapsed;
 
             CurrState.FuelChosen = null;
             CurrState.Reserve = null;
+
+            IOMainFrame.Navigate(PanelTypes.Service);
         }
 
         public void SetVolumePanel() {
-            IOMainFrame.Navigate(PanelTypes.Volume);
-
             backBtn.IsEnabled = true;
             homeBtn.IsEnabled = true;
             serviceBtn.Visibility = Visibility.Collapsed;
 
             CurrState.Reserve = null;
+
+            IOMainFrame.Navigate(PanelTypes.Volume);
         }
 
         public void SetPaymentPanel() {
-            IOMainFrame.Navigate(PanelTypes.Payment);
-
             backBtn.IsEnabled = true;
             homeBtn.IsEnabled = true;
             serviceBtn.Visibility = Visibility.Collapsed;
+
+            IOMainFrame.Navigate(PanelTypes.Payment);
+        }
+
+        public void SetFuelFillingPanel() {
+            backBtn.IsEnabled = false;
+            homeBtn.IsEnabled = false;
+            serviceBtn.Visibility = Visibility.Collapsed;
+
+            IOMainFrame.Navigate(PanelTypes.FuelFilling);
         }
 
         private void backBtn_Click(object sender, RoutedEventArgs e) {
@@ -100,7 +113,6 @@ namespace PetrolStation {
             else if (pt == PanelTypes.Payment) {
                 SetVolumePanel();
             }
-            // ...
             else {
                 SetStartPanel();
             }
@@ -116,7 +128,7 @@ namespace PetrolStation {
 
         public class State {
             Stocks.FuelReserved.Reserve _reserve;
-            public string FuelChosen { get; set; }
+            public Stocks.FuelInfo.Fuel FuelChosen { get; set; }
             public Stocks.FuelReserved.Reserve Reserve {
                 get {
                     return _reserve;
@@ -138,7 +150,7 @@ namespace PetrolStation {
             public ServicePanel Service { get; set; }
             public VolumePanel Volume { get; set; }
             public PaymentPanel Payment { get; set; }
-            // ...
+            public fuelFillingPanel FuelFilling { get; set; }
         }
 
         public class PanelTypes {
@@ -147,7 +159,7 @@ namespace PetrolStation {
             public static Type Service = typeof(ServicePanel);
             public static Type Volume = typeof(VolumePanel);
             public static Type Payment = typeof(PaymentPanel);
-            // ...
+            public static Type FuelFilling = typeof(fuelFillingPanel);
         }
     }
 }

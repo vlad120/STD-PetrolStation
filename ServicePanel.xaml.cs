@@ -20,21 +20,25 @@ namespace PetrolStation {
 
             serviceContent.Visibility = Visibility.Collapsed;
             defaultBorderBrush = passwordBox.BorderBrush;
+
+            fuel92Name.Text = Stocks.FuelInfo.Fuel92.Name + ':';
+            fuel95Name.Text = Stocks.FuelInfo.Fuel95.Name + ':';
+            fuel98Name.Text = Stocks.FuelInfo.Fuel98.Name + ':';
+            fuelDName.Text = Stocks.FuelInfo.FuelD.Name + ':';
         }
 
         private async void loadData() {
             await Stocks.LoadAsync();
-            var fuel = Stocks.Fuel;
 
-            volume92.Text = fuel.Volume92.ToString();
-            volume95.Text = fuel.Volume95.ToString();
-            volume98.Text = fuel.Volume98.ToString();
-            volumeD.Text = fuel.VolumeD.ToString();
+            volume92.Text = Stocks.FuelInfo.Fuel92.Volume.ToString();
+            volume95.Text = Stocks.FuelInfo.Fuel95.Volume.ToString();
+            volume98.Text = Stocks.FuelInfo.Fuel98.Volume.ToString();
+            volumeD.Text = Stocks.FuelInfo.FuelD.Volume.ToString();
 
-            cost92.Text = fuel.Cost92.ToString();
-            cost95.Text = fuel.Cost95.ToString();
-            cost98.Text = fuel.Cost98.ToString();
-            costD.Text = fuel.CostD.ToString();
+            cost92.Text = Stocks.FuelInfo.Fuel92.Cost.ToString();
+            cost95.Text = Stocks.FuelInfo.Fuel95.Cost.ToString();
+            cost98.Text = Stocks.FuelInfo.Fuel98.Cost.ToString();
+            costD.Text = Stocks.FuelInfo.FuelD.Cost.ToString();
         }
 
         private async void acceptBtn_Click(object sender, RoutedEventArgs e) {
@@ -69,15 +73,18 @@ namespace PetrolStation {
             }
 
             if (ok) {
-                var fuel = Stocks.Fuel;
-                fuel.Volume92 = volumes[0];
-                fuel.Volume95 = volumes[1];
-                fuel.Volume98 = volumes[2];
-                fuel.VolumeD = volumes[3];
-                fuel.Cost92 = costs[0];
-                fuel.Cost95 = costs[1];
-                fuel.Cost98 = costs[2];
-                fuel.CostD = costs[3];
+                Stocks.FuelInfo.Fuel92.Volume = volumes[0];
+                Stocks.FuelInfo.Fuel92.Cost = costs[0];
+
+                Stocks.FuelInfo.Fuel95.Volume = volumes[1];
+                Stocks.FuelInfo.Fuel95.Cost = costs[1];
+
+                Stocks.FuelInfo.Fuel98.Volume = volumes[2];
+                Stocks.FuelInfo.Fuel98.Cost = costs[2];
+
+                Stocks.FuelInfo.FuelD.Volume = volumes[3];
+                Stocks.FuelInfo.FuelD.Cost = costs[3];
+
                 await Stocks.SaveAsync();
                 await Alert.ShowAsync(Alert.NOTIFY, "Данные сохранены!");
             }

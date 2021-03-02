@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using System.Threading;
+using Newtonsoft.Json.Linq;
 
 namespace PetrolStation {
     sealed partial class App : Application {
@@ -98,78 +99,161 @@ public class Stocks {
     private static StorageFolder _localFolder = ApplicationData.Current.LocalFolder;
     private static string _settingsFileName = "stocks.json";
 
-    public static FuelInfo Fuel { get; private set; }
-
     public static async Task LoadAsync() {
-        Fuel = null;
+        FuelInfo.Null();
         try {
             StorageFile file = await _localFolder.GetFileAsync(_settingsFileName);
-            Fuel = JsonConvert.DeserializeObject<FuelInfo>(await FileIO.ReadTextAsync(file));
+            var data = JObject.Parse(await FileIO.ReadTextAsync(file));
+            if (data.ContainsKey("fuel")) {
+                foreach (JObject obj in (JArray)data["fuel"]) {
+                    foreach (FuelInfo.Fuel fuel in FuelInfo.AllFuel) {
+                        if (fuel.TryLoadJSON(obj)) {
+                            break;
+                        }
+                    }
+                }
+            }
         } catch (Exception) { }
-
-        if (Fuel == null) {
-            Fuel = new FuelInfo();
-        }
     }
 
     public static async Task SaveAsync() {
         try {
+            JObject rootObj = new JObject();
+            rootObj.Add("fuel", FuelInfo.AsJSON());
+
             StorageFile file = await _localFolder.CreateFileAsync(_settingsFileName, CreationCollisionOption.ReplaceExisting);
-            await FileIO.WriteTextAsync(file, JsonConvert.SerializeObject(Fuel));
-            Debug.WriteLine("Stocks saved, fuel: " + Fuel.ToString());
-        } catch (FileLoadException) {
+            await FileIO.WriteTextAsync(file, JsonConvert.SerializeObject(rootObj));
+
+            Debug.WriteLine("Stocks saved, fuel: " + FuelInfo.AsString());
+        }
+        catch (FileLoadException) {
             await Alert.ShowAsync(Alert.ERROR, "Произошла ошибка доступа к файлу. Настройки не сохранены!");
-        } catch (FileNotFoundException) {
+        }
+        catch (FileNotFoundException) {
             await Alert.ShowAsync(Alert.ERROR, "Произошла ошибка доступа к файлу. Настройки не сохранены!");
         }
     }
 
     public class FuelInfo {
-        public double Volume92 { get; set; } = 0d;
-        public double Volume95 { get; set; } = 0d;
-        public double Volume98 { get; set; } = 0d;
-        public double VolumeD { get; set; } = 0d;
-        public double Cost92 { get; set; } = 0d;
-        public double Cost95 { get; set; } = 0d;
-        public double Cost98 { get; set; } = 0d;
-        public double CostD { get; set; } = 0d;
+        public static Fuel Fuel92 { get; } = new Fuel("92", "АИ-92");
+        public static Fuel Fuel95 { get; } = new Fuel("95", "АИ-95");
+        public static Fuel Fuel98 { get; } = new Fuel("98", "АИ-98");
+        public static Fuel FuelD { get; } = new Fuel("D", "Дизель");
 
-        public override string ToString() {
-            return $"92=({Volume92}, {Cost92}); 95=({Volume95}, {Cost95}); " +
-                $"98=({Volume98}, {Cost98}); D=({VolumeD}, {CostD});";
+        public static Fuel[] AllFuel = new Fuel[] { Fuel92, Fuel95, Fuel98, FuelD };
+
+        public static Fuel GetFuel(string keyName) {
+            foreach (Fuel fuel in AllFuel) {
+                if (fuel.KeyName == keyName) {
+                    return fuel;
+                }
+            }
+            throw new KeyNotFoundException();
         }
 
-        public double getAvailVolume(string t) {
-            switch (t) {
-                case "92": return Fuel.Volume92 - FuelReserved.Volume92;
-                case "95": return Fuel.Volume95 - FuelReserved.Volume95;
-                case "98": return Fuel.Volume98 - FuelReserved.Volume98;
-                case "D": return Fuel.VolumeD - FuelReserved.VolumeD;
-                default: return 0d;
+        public static void Null() {
+            foreach (Fuel fuel in AllFuel) {
+                fuel.Null();
             }
         }
 
-        public double getCost(string t) {
-            switch (t) {
-                case "92": return Fuel.Cost92;
-                case "95": return Fuel.Cost95;
-                case "98": return Fuel.Cost98;
-                case "D": return Fuel.CostD;
-                default: return 0d;
+        public static string AsString() {
+            var sw = new StringWriter();
+            int last = AllFuel.Length - 1;
+            Fuel f;
+            for (int i = 0; i <= last; ++i) {
+                f = AllFuel[i];
+                sw.Write($"{f.KeyName}={{{f.Volume}L, {f.Cost}Rub}}");
+                if (i != last) {
+                    sw.Write(", ");
+                }
+            }
+            return sw.ToString();
+        }
+
+        public static JArray AsJSON() {
+            JArray array = new JArray();
+            foreach (Fuel fuel in AllFuel) {
+                array.Add(fuel.AsJSON());
+            }
+            return array;
+        }
+
+        public class Fuel {
+            public string KeyName { get; private set; }
+            public string Name { get; private set; }
+            public double Cost { get; set; } = -1d;
+            public double Volume { get; set; } = 0d;
+
+            public Fuel(string keyName, string name, double cost = 0d, double volume = 0d) {
+                KeyName = keyName;
+                Name = name;
+                Cost = cost;
+                Volume = volume;
+            }
+
+            public double AvailVolume {
+                get { return Volume - FuelReserved.GetFuel(KeyName).Volume; }
+            }
+
+            public void Null() {
+                Cost = -1d;
+                Volume = 0;
+            }
+
+            public JObject AsJSON() {
+                JObject obj = new JObject();
+                obj.Add("key_name", KeyName);
+                obj.Add("cost", Cost);
+                obj.Add("volume", Volume);
+                return obj;
+            }
+
+            public bool TryLoadJSON(JObject obj) {
+                try {
+                    if (obj.ContainsKey("key_name")) {
+                        if ((string)obj["key_name"] != KeyName) {
+                            return false;
+                        }
+                    }
+                } catch (Exception) {
+                    return false;
+                }
+                try {
+                    if (obj.ContainsKey("cost")) Cost = (double)obj["cost"];
+                }
+                catch (Exception) { }
+                try {
+                    if (obj.ContainsKey("volume")) Volume = (double)obj["volume"];
+                }
+                catch (Exception) { }
+                return true;
             }
         }
     }
 
     public class FuelReserved {
-        public static double Volume92 { get; private set; } = 0d;
-        public static double Volume95 { get; private set; } = 0d;
-        public static double Volume98 { get; private set; } = 0d;
-        public static double VolumeD { get; private set; } = 0d;
+
+        const int RESERVE_TIME_MS = 10_000;  // 5 min (10 sec) + max 30s
+
+        public static Fuel Fuel92 { get; } = new Fuel(FuelInfo.Fuel92);
+        public static Fuel Fuel95 { get; } = new Fuel(FuelInfo.Fuel95);
+        public static Fuel Fuel98 { get; } = new Fuel(FuelInfo.Fuel98);
+        public static Fuel FuelD { get;} = new Fuel(FuelInfo.FuelD);
+
+        public static Fuel[] AllFuel = new Fuel[] { Fuel92, Fuel95, Fuel98, FuelD };
 
         private static List<Reserve> _reserveList = new List<Reserve>();
         private static Thread _checkingThread;
 
-        const int RESERVE_TIME_MS = 10_000;  // 5 min (10 sec) + max 30s
+        public static Fuel GetFuel(string keyName) {
+            foreach (Fuel fuel in AllFuel) {
+                if (fuel.KeyName == keyName) {
+                    return fuel;
+                }
+            }
+            throw new KeyNotFoundException();
+        }
 
         public static void StartCheckingThread() {
             _checkingThread = new Thread(new ThreadStart(AutoRemoveOldReserves));
@@ -177,11 +261,9 @@ public class Stocks {
         }
 
         public static void AutoRemoveOldReserves() {
-            DateTime now;
             while (true) {
                 Thread.Sleep(30_000);  // every 30s
-                now = DateTime.Now;
-                while (Stocks.FuelReserved._reserveList.Count > 0 && Stocks.FuelReserved._reserveList[0].isExpired()) {
+                while (_reserveList.Count > 0 && _reserveList[0].isExpired()) {
                     RemoveReserve(0);
                 }
             }
@@ -189,92 +271,55 @@ public class Stocks {
 
         private static void RemoveReserve(int index) {
             Reserve reserve = _reserveList[index];
-            double vol = reserve.volume;
-            switch (reserve.t) {
-                case "92": {
-                    Fuel.Volume92 += vol;
-                    Volume92 -= vol;
-                    if (Fuel.Volume92 < 0) Fuel.Volume92 = 0;
-                    break;
+            reserve.fuel.Volume -= reserve.volume;
+        }
+
+        public class Fuel {
+            private double _volume;
+            public string KeyName { get; private set; }
+            public double Volume {
+                get { return _volume; }
+                set {
+                    if (value < 0) _volume = 0;
+                    else _volume = value;
                 }
-                case "95": {
-                    Fuel.Volume95 += vol;
-                    Volume95 -= vol;
-                    if (Fuel.Volume95 < 0) Fuel.Volume95 = 0;
-                    break;
-                }
-                case "98": {
-                    Fuel.Volume98 += vol;
-                    Volume98 -= vol;
-                    if (Fuel.Volume98 < 0) Fuel.Volume98 = 0;
-                    break;
-                }
-                case "D": {
-                    Fuel.VolumeD += vol;
-                    VolumeD -= vol;
-                    if (Fuel.VolumeD < 0) Fuel.VolumeD = 0;
-                    break;
-                }
+            }
+            public Fuel(FuelInfo.Fuel fuel, double volume = 0d) {
+                KeyName = fuel.KeyName;
+                Volume = volume;
+            }
+
+            public FuelInfo.Fuel Origin {
+                get { return FuelInfo.GetFuel(KeyName); }
             }
         }
 
         public class Reserve {
             public readonly DateTime dateCreated;
-            public readonly string t;
+            public readonly Fuel fuel;
             public readonly double volume;
             public readonly double totalCost;
 
-            public Reserve(string t, double volume, double totalCost) {
-                switch (t) {
-                    case "92": {
-                        if (volume < 0 || volume > Fuel.Volume92) {
-                            throw new ArithmeticException();
-                        }
-                        Fuel.Volume92 -= volume;
-                        FuelReserved.Volume92 += volume;
-                        break;
-                    }
-                    case "95": {
-                        if (volume < 0 || volume > Fuel.Volume95) {
-                            throw new ArithmeticException();
-                        }
-                        Fuel.Volume95 -= volume;
-                        FuelReserved.Volume95 += volume;
-                        break;
-                    }
-                    case "98": {
-                        if (volume < 0 || volume > Fuel.Volume98) {
-                            throw new ArithmeticException();
-                        }
-                        Fuel.Volume98 -= volume;
-                        FuelReserved.Volume98 += volume;
-                        break;
-                    }
-                    case "D": {
-                        if (volume < 0 || volume > Fuel.VolumeD) {
-                            throw new ArithmeticException();
-                        }
-                        Fuel.VolumeD -= volume;
-                        FuelReserved.VolumeD += volume;
-                        break;
-                    }
+            public Reserve(FuelInfo.Fuel fuelOrigin, double volume, double totalCost) {
+                if (volume < 0 || volume > fuelOrigin.Volume) {
+                    throw new ArithmeticException();
                 }
                 this.dateCreated = DateTime.Now;
-                this.t = t;
+                this.fuel = GetFuel(fuelOrigin.KeyName);
                 this.volume = volume;
                 this.totalCost = totalCost;
+
+                fuel.Volume += volume;
                 FuelReserved._reserveList.Add(this);
                 Debug.WriteLine("New reserve: " + this.ToString());
             }
 
             public override string ToString() {
-                return $"{dateCreated}, {t}, {volume}L, {totalCost}Rub";
+                return $"{fuel.KeyName}={{{volume}L, {totalCost}Rub, {dateCreated}}}";
             }
 
             public DateTime dateEnd {
-                get {
-                    return dateCreated + TimeSpan.FromMilliseconds(RESERVE_TIME_MS);
-                }
+                get { return dateCreated + TimeSpan.FromMilliseconds(RESERVE_TIME_MS); }
             }
 
             public bool isExpired() {
@@ -286,6 +331,22 @@ public class Stocks {
                 if (index != -1) {
                     FuelReserved.RemoveReserve(index);
                 }
+            }
+
+            public async Task Finish() {
+                await Finish(volume);
+            }
+
+            public async Task Finish(double volume) {
+                var fuelOrigin = fuel.Origin;
+                if (fuelOrigin.Volume > volume) {
+                    fuelOrigin.Volume -= volume;
+                }
+                else {
+                    fuelOrigin.Volume = 0d;
+                }
+                await Stocks.SaveAsync();
+                Remove();
             }
         }
     }

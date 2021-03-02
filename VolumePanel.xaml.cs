@@ -8,23 +8,18 @@ using Windows.UI.Xaml.Navigation;
 namespace PetrolStation {
     public sealed partial class VolumePanel : Page {
         const double MAX_VOLUME_ALLOWED = 100d;
-        double _num;
-        string _fuelChosen;
+        double _volume;
+        Stocks.FuelInfo.Fuel _fuelChosen;
 
         public VolumePanel() {
             this.InitializeComponent();
             this.NavigationCacheMode = NavigationCacheMode.Disabled;
             App.CurrPages.Main.CurrPanels.Volume = this;
 
-            string fuelChosen = App.CurrPages.Main.CurrState.FuelChosen;
-            if (fuelChosen == "D") {
-                fuelLabel.Text = "Дизель";
-            } else {
-                fuelLabel.Text = "АИ-" + fuelChosen;
-            }
-            acceptBtn.IsEnabled = false;
-
             _fuelChosen = App.CurrPages.Main.CurrState.FuelChosen;
+
+            fuelLabel.Text = _fuelChosen.Name;
+            acceptBtn.IsEnabled = false;
 
             double maxVolume = getMaxVolume();
             fuelVolume.PlaceholderText = "от 1 до " + maxVolume;
@@ -34,7 +29,7 @@ namespace PetrolStation {
         }
 
         private double getMaxVolume() {
-            double availVolume = Stocks.Fuel.getAvailVolume(_fuelChosen);
+            double availVolume = _fuelChosen.AvailVolume;
             if (availVolume > MAX_VOLUME_ALLOWED) {
                 return MAX_VOLUME_ALLOWED;
             }
@@ -42,14 +37,14 @@ namespace PetrolStation {
         }
 
         private void fuelVolume_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args) {
-            if (double.TryParse(sender.Text, out _num)) {
-                if (_num < 1) {
+            if (double.TryParse(sender.Text, out _volume)) {
+                if (_volume < 1) {
                     acceptBtn.IsEnabled = false;
                     totalCost.Text = "";
                 }
-                else if (_num <= getMaxVolume()) {
+                else if (_volume <= getMaxVolume()) {
                     acceptBtn.IsEnabled = true;
-                    totalCost.Text = Math.Round(_num * Stocks.Fuel.getCost(_fuelChosen), 2) + " ₽";
+                    totalCost.Text = Math.Round(_volume * _fuelChosen.Cost, 2) + " ₽";
                 }
                 else {
                     acceptBtn.IsEnabled = true;
@@ -76,23 +71,23 @@ namespace PetrolStation {
 
         private async Task Accept() {
             try {
-                _num = int.Parse(fuelVolume.Text);
+                _volume = double.Parse(fuelVolume.Text);
             } catch (Exception) {
                 acceptBtn.IsEnabled = false;
                 await Alert.ShowAsync(Alert.ERROR, $"Некорректное значение! ('{fuelVolume.Text}')");
                 return;
             }
-            if (_num < 1) {
+            if (_volume < 1) {
                 await Alert.ShowAsync(Alert.ERROR, $"Некорректное значение! (разрешено от 1 до {MAX_VOLUME_ALLOWED})");
                 return;
             }
-            if (_num > MAX_VOLUME_ALLOWED) {
+            if (_volume > MAX_VOLUME_ALLOWED) {
                 await Alert.ShowAsync(Alert.ERROR, $"Выбрано слишком много! (максимум {MAX_VOLUME_ALLOWED})");
                 return;
             }
 
-            double availVolume = Stocks.Fuel.getAvailVolume(_fuelChosen);
-            if (_num > availVolume) {
+            double availVolume = _fuelChosen.AvailVolume;
+            if (_volume > availVolume) {
                 await Alert.ShowAsync(Alert.ERROR, $"К сожалению, выбранное количество недоступно! (максимум {availVolume})");
                 fuelVolume.PlaceholderText = "от 1 до " + availVolume;
                 return;
@@ -100,13 +95,23 @@ namespace PetrolStation {
 
             try {
                 App.CurrPages.Main.CurrState.Reserve = new Stocks.FuelReserved.Reserve(
-                    App.CurrPages.Main.CurrState.FuelChosen,
-                    _num,
-                    Math.Round(_num * Stocks.Fuel.getCost(_fuelChosen), 2)
+                    _fuelChosen,
+                    _volume,
+                    Math.Round(_volume * _fuelChosen.Cost, 2)
                 );
             } catch (ArithmeticException) {
                 await Alert.ShowAsync(Alert.ERROR, $"Извините, произошла ошибка даных...\nПопробуйте ввести значение заново.");
-                fuelVolume.PlaceholderText = "от 1 до " + Stocks.Fuel.getAvailVolume(_fuelChosen);
+                fuelVolume.PlaceholderText = "от 1 до " + _fuelChosen.AvailVolume;
+                return;
+            }
+
+            var reserve = App.CurrPages.Main.CurrState.Reserve;
+            var answer = await Alert.AskAsync(
+                Alert.CONFIRM,
+                $"Вы выбрали {reserve.fuel.Origin.Name}, {reserve.volume} литров.\nИтого: {reserve.totalCost}₽"
+            );
+            if (answer != Alert.YES) {
+                App.CurrPages.Main.CurrState.Reserve = null;  // with auto-removing
                 return;
             }
 

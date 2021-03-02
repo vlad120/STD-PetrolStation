@@ -9,6 +9,36 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <TextBlock x:Name="orderStruct" HorizontalAlignment="Center" Margin="0,-280,0,0" 
+                   Text="[ТОПЛИВО] (XX л)" TextWrapping="Wrap" VerticalAlignment="Center" 
+                   FontSize="36" FontWeight="Bold" FontStyle="Italic" Foreground="#FF20AB12"/>
 
+        <TextBlock x:Name="totalCost" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Margin="0,-170,0,0" Text="XXX руб." TextWrapping="Wrap" FontSize="28"
+                   FontWeight="Bold" FontStyle="Italic" >
+            <TextBlock.Foreground>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Orange"/>
+                    <GradientStop Color="Red" Offset="1.8"/>
+                </LinearGradientBrush>
+            </TextBlock.Foreground>
+        </TextBlock>
+
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Text="&#xE8C7;" FontFamily="Segoe MDL2 Assets" FontSize="72"
+                   Opacity="0.7" Margin="-250,-10,0,0"/>
+        
+        <TextBox x:Name="cardBalance" x:FieldModifier="public" HorizontalAlignment="Center"
+                 Margin="50,-10,0,0" PlaceholderText="Баланс на карте"
+                 VerticalAlignment="Center" Width="200" Height="34"
+                 TextChanged="cardBalance_TextChanged" KeyDown="cardBalance_KeyDown"/>
+
+        <Button x:Name="acceptBtn" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Margin="300,-10,0,0" Content="₽" Width="34" Height="34" FontSize="20"
+                Padding="0,0,0,0" ToolTipService.ToolTip="Оплатить заказ" Click="Button_Click"/>
+
+        <TextBlock x:Name="paymentTimer" HorizontalAlignment="Center" Margin="0,70,0,0"
+                   Text="xx:xx" VerticalAlignment="Center" FontSize="18" FontStyle="Italic"
+                   Opacity="0.8"/>
     </Grid>
 </Page>

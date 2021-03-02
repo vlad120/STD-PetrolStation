@@ -21,58 +21,78 @@
         <Grid x:Name="serviceContent" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-130,0,0">
             <!-- АИ-92 -->
             
-            <TextBlock HorizontalAlignment="Left" Margin="0,4,0,0" Text="АИ-92:"
+            <TextBlock x:Name="fuel92Name" HorizontalAlignment="Left" Margin="0,4,0,0" Text="[Топливо]:"
                    TextWrapping="Wrap" VerticalAlignment="Top" FontSize="16" FontWeight="Bold"/>
 
             <TextBox x:Name="volume92" HorizontalAlignment="Left" Margin="100,0,0,0"
                      PlaceholderText="литры" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"
                      ToolTipService.ToolTip="Объём оставшегося топлива, литры"/>
 
-            <TextBox x:Name="cost92" HorizontalAlignment="Left" Margin="220,0,0,0"
+            <TextBlock Text="x" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="80,4,0,0"/>
+
+            <TextBox x:Name="cost92" HorizontalAlignment="Left" Margin="240,0,0,0"
                      PlaceholderText="руб/л" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"
                      ToolTipService.ToolTip="Цена топлива, рубли за 1 литр"/>
 
+            <TextBlock Text="₽" HorizontalAlignment="Center" VerticalAlignment="Top"
+                       Margin="350,4,0,0" FontSize="18"/>
+
             <!-- АИ-95 -->
 
-            <TextBlock HorizontalAlignment="Left" Margin="0,64,0,0" Text="АИ-95:"
+            <TextBlock x:Name="fuel95Name" HorizontalAlignment="Left" Margin="0,64,0,0" Text="[Топливо]:"
                    TextWrapping="Wrap" VerticalAlignment="Top" FontSize="16" FontWeight="Bold"/>
 
             <TextBox x:Name="volume95" HorizontalAlignment="Left" Margin="100,60,0,0"
                      PlaceholderText="литры" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"
                      ToolTipService.ToolTip="Объём оставшегося топлива, литры"/>
 
-            <TextBox x:Name="cost95" HorizontalAlignment="Left" Margin="220,60,0,0"
+            <TextBlock Text="x" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="80,64,0,0"/>
+
+            <TextBox x:Name="cost95" HorizontalAlignment="Left" Margin="240,60,0,0"
                      PlaceholderText="руб/л" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"
                      ToolTipService.ToolTip="Цена топлива, рубли за 1 литр"/>
+            
+            <TextBlock Text="₽" HorizontalAlignment="Center" VerticalAlignment="Top"
+                       Margin="350,64,0,0" FontSize="18"/>
 
             <!-- АИ-98 -->
 
-            <TextBlock HorizontalAlignment="Left" Margin="0,126,0,0" Text="АИ-98:"
+            <TextBlock x:Name="fuel98Name" HorizontalAlignment="Left" Margin="0,126,0,0" Text="[Топливо]:"
                    TextWrapping="Wrap" VerticalAlignment="Top" FontSize="16" FontWeight="Bold"/>
 
             <TextBox x:Name="volume98" HorizontalAlignment="Left" Margin="100,120,0,0"
                      PlaceholderText="литры" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"
                      ToolTipService.ToolTip="Объём оставшегося топлива, литры"/>
 
-            <TextBox x:Name="cost98" HorizontalAlignment="Left" Margin="220,120,0,0"
+            <TextBlock Text="x" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="80,124,0,0"/>
+
+            <TextBox x:Name="cost98" HorizontalAlignment="Left" Margin="240,120,0,0"
                      PlaceholderText="руб/л" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"
                      ToolTipService.ToolTip="Цена топлива, рубли за 1 литр"/>
 
+            <TextBlock Text="₽" HorizontalAlignment="Center" VerticalAlignment="Top"
+                       Margin="350,124,0,0" FontSize="18"/>
+
             <!-- ДТ -->
 
-            <TextBlock HorizontalAlignment="Left" Margin="0,184,0,0" Text="ДТ:"
+            <TextBlock x:Name="fuelDName" HorizontalAlignment="Left" Margin="0,184,0,0" Text="[Топливо]:"
                    TextWrapping="Wrap" VerticalAlignment="Top" FontSize="16" FontWeight="Bold"/>
 
             <TextBox x:Name="volumeD" HorizontalAlignment="Left" Margin="100,180,0,0"
                      PlaceholderText="литры" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"
                      ToolTipService.ToolTip="Объём оставшегося топлива, литры"/>
 
-            <TextBox x:Name="costD" HorizontalAlignment="Left" Margin="220,180,0,0"
+            <TextBlock Text="x" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="80,184,0,0"/>
+
+            <TextBox x:Name="costD" HorizontalAlignment="Left" Margin="240,180,0,0"
                      PlaceholderText="руб/л" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"
                      ToolTipService.ToolTip="Цена топлива, рубли за 1 литр"/>
-            
+
+            <TextBlock Text="₽" HorizontalAlignment="Center" VerticalAlignment="Top"
+                       Margin="350,184,0,0" FontSize="18"/>
+
             <Button x:Name="acceptBtn" Content="Применить" Margin="0,240,0,0"
-                    VerticalAlignment="Top" Width="320" Click="acceptBtn_Click"/>
+                    VerticalAlignment="Top" Width="360" Click="acceptBtn_Click" HorizontalAlignment="Center"/>
         </Grid>
     </Grid>
 </Page>

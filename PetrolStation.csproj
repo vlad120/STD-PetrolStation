@@ -122,6 +122,9 @@
     <Compile Include="DisabledPanel.xaml.cs">
       <DependentUpon>DisabledPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="fuelFillingPanel.xaml.cs">
+      <DependentUpon>fuelFillingPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -163,6 +166,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="DisabledPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="fuelFillingPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
