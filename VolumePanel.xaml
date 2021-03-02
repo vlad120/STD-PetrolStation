@@ -18,10 +18,13 @@
         
         <TextBox x:Name="fuelVolume" HorizontalAlignment="Center" Margin="-50,10,0,0"
                  VerticalAlignment="Center" Width="160" Height="40" PlaceholderText="от X до X"
-                 FontSize="20" TextChanging="fuelVolume_TextChanging"/>
+                 FontSize="20" TextChanging="fuelVolume_TextChanging" KeyDown="fuelVolume_KeyDown"/>
 
         <Button x:Name="acceptBtn" FontFamily="Segoe MDL2 Assets" Content="&#xE8FB;"
                 Margin="170,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"
                 Width="40" Height="40" Click="acceptBtn_Click"/>
+        
+        <TextBlock x:Name="totalCost" HorizontalAlignment="Center" Margin="0,100,0,0"
+                   Text="XXX ₽" VerticalAlignment="Center" FontSize="18" FontStyle="Italic"/>
     </Grid>
 </Page>

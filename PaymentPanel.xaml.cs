@@ -20,6 +20,12 @@ namespace PetrolStation {
             this.InitializeComponent();
             this.NavigationCacheMode = NavigationCacheMode.Disabled;
             App.CurrPages.Main.CurrPanels.Payment = this;
+
+
         }
+
+
+
+
     }
 }

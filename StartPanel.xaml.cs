@@ -17,10 +17,10 @@ namespace PetrolStation {
         private void refreshData() {
             var fuel = Stocks.Fuel;
 
-            fuel92VolumeBlock.Text = fuel.Volume92 + " л";
-            fuel95VolumeBlock.Text = fuel.Volume95 + " л";
-            fuel98VolumeBlock.Text = fuel.Volume98 + " л";
-            fuelDVolumeBlock.Text = fuel.VolumeD + " л";
+            fuel92VolumeBlock.Text = fuel.Volume92 - Stocks.FuelReserved.Volume92 + " л";
+            fuel95VolumeBlock.Text = fuel.Volume95 - Stocks.FuelReserved.Volume95 + " л";
+            fuel98VolumeBlock.Text = fuel.Volume98 - Stocks.FuelReserved.Volume98 + " л";
+            fuelDVolumeBlock.Text = fuel.VolumeD - Stocks.FuelReserved.VolumeD + " л";
 
             fuel92CostBlock.Text = fuel.Cost92 + " руб/л";
             fuel95CostBlock.Text = fuel.Cost95 + " руб/л";

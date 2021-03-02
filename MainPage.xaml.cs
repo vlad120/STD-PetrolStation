@@ -49,8 +49,7 @@ namespace PetrolStation {
             serviceBtn.Visibility = Visibility.Visible;
 
             CurrState.FuelChosen = null;
-            CurrState.VolumeChosen = 0;
-            CurrState.TotalCost = 0;
+            CurrState.Reserve = null;
         }
 
         public void SetDisabledPanel() {
@@ -61,8 +60,7 @@ namespace PetrolStation {
             serviceBtn.Visibility = Visibility.Visible;
 
             CurrState.FuelChosen = null;
-            CurrState.VolumeChosen = 0;
-            CurrState.TotalCost = 0;
+            CurrState.Reserve = null;
         }
 
         public void SetServicePanel() {
@@ -73,8 +71,7 @@ namespace PetrolStation {
             serviceBtn.Visibility = Visibility.Collapsed;
 
             CurrState.FuelChosen = null;
-            CurrState.VolumeChosen = 0;
-            CurrState.TotalCost = 0;
+            CurrState.Reserve = null;
         }
 
         public void SetVolumePanel() {
@@ -84,8 +81,7 @@ namespace PetrolStation {
             homeBtn.IsEnabled = true;
             serviceBtn.Visibility = Visibility.Collapsed;
 
-            CurrState.VolumeChosen = 0;
-            CurrState.TotalCost = 0;
+            CurrState.Reserve = null;
         }
 
         public void SetPaymentPanel() {
@@ -119,9 +115,21 @@ namespace PetrolStation {
         }
 
         public class State {
+            Stocks.FuelReserved.Reserve _reserve;
             public string FuelChosen { get; set; }
-            public int VolumeChosen { get; set; }
-            public double TotalCost { get; set; }
+            public Stocks.FuelReserved.Reserve Reserve {
+                get {
+                    return _reserve;
+                }
+                set {
+                    if (value != _reserve) {
+                        if (_reserve != null) {
+                            _reserve.Remove();
+                        }
+                        _reserve = value;
+                    }
+                }
+            }
         }
 
         public class Panels {

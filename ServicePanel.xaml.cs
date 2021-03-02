@@ -40,7 +40,7 @@ namespace PetrolStation {
         private async void acceptBtn_Click(object sender, RoutedEventArgs e) {
             TextBox[] volumeTextBoxes = { volume92, volume95, volume98, volumeD };
             TextBox[] costTextBoxes = { cost92, cost95, cost98, costD };
-            int[] volumes = new int[4];
+            double[] volumes = new double[4];
             double[] costs = new double[4];
 
             foreach (var box in volumeTextBoxes) {
@@ -53,7 +53,7 @@ namespace PetrolStation {
             bool ok = true;
             for (int i = 0; i < 4; ++i) {
                 try {
-                    volumes[i] = int.Parse(volumeTextBoxes[i].Text);
+                    volumes[i] = double.Parse(volumeTextBoxes[i].Text);
                 } catch (Exception) {
                     volumeTextBoxes[i].BorderBrush = redBorderBrush;
                     ok = false;
