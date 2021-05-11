@@ -33,6 +33,9 @@ namespace PetrolStation {
         }
 
         public async void TimerNext(object sender, object e) {
+            if (!this.IsLoaded) {
+                _timer.Stop();
+            }
             if (_timeLeft == _timeEnd) {
                 _timer.Stop();
                 await Alert.ShowAsync(Alert.ATTENTION, "Время оплаты истекло!");

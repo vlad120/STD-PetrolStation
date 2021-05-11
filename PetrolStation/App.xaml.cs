@@ -15,27 +15,24 @@ using Newtonsoft.Json;
 using System.Threading;
 using Newtonsoft.Json.Linq;
 
+
 namespace PetrolStation {
     sealed partial class App : Application {
 
-        private Pages _currPages;
+        private readonly Pages _currPages;
         private Frame _rootFrame;
         private bool _windowSizeError = false;
 
         public App() {
-            this.InitializeComponent();
-            this.Suspending += OnSuspending;
-            this._currPages = new Pages();
+            InitializeComponent();
+            Suspending += OnSuspending;
+            _currPages = new Pages();
         }
 
-        public static Pages CurrPages {
-            get {
-                return ((App)App.Current)._currPages;
-            }
-        }
-        
+        public static Pages CurrPages => ((App)Current)._currPages;
+
         protected override void OnLaunched(LaunchActivatedEventArgs e) {
-            this._rootFrame = Window.Current.Content as Frame;
+            _rootFrame = Window.Current.Content as Frame;
 
             if (_rootFrame == null) {
                 _rootFrame = new Frame();
@@ -69,19 +66,18 @@ namespace PetrolStation {
 
         private void OnSuspending(object sender, SuspendingEventArgs e) {
             var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Сохранить состояние приложения и остановить все фоновые операции
             deferral.Complete();
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e) {
             if (e.NewSize.Width < 900 || e.NewSize.Height < 600) {
                 if (!_windowSizeError) {
-                    (Window.Current.Content as Frame).Navigate(typeof(WindowSizeError));
+                    (Window.Current.Content as Frame)?.Navigate(typeof(WindowSizeError));
                     _windowSizeError = true;
                 }
             }
             else if (_windowSizeError) {
-                (Window.Current.Content as Frame).Navigate(typeof(MainPage));
+                (Window.Current.Content as Frame)?.Navigate(typeof(MainPage));
                 _windowSizeError = false;
             }
 
@@ -96,13 +92,13 @@ namespace PetrolStation {
 
 
 public class Stocks {
-    private static StorageFolder _localFolder = ApplicationData.Current.LocalFolder;
+    private static readonly StorageFolder LocalFolder = ApplicationData.Current.LocalFolder;
     private static string _settingsFileName = "stocks.json";
 
     public static async Task LoadAsync() {
         FuelInfo.Null();
         try {
-            StorageFile file = await _localFolder.GetFileAsync(_settingsFileName);
+            StorageFile file = await LocalFolder.GetFileAsync(_settingsFileName);
             var data = JObject.Parse(await FileIO.ReadTextAsync(file));
             if (data.ContainsKey("fuel")) {
                 foreach (JObject obj in (JArray)data["fuel"]) {
@@ -121,7 +117,7 @@ public class Stocks {
             JObject rootObj = new JObject();
             rootObj.Add("fuel", FuelInfo.AsJSON());
 
-            StorageFile file = await _localFolder.CreateFileAsync(_settingsFileName, CreationCollisionOption.ReplaceExisting);
+            StorageFile file = await LocalFolder.CreateFileAsync(_settingsFileName, CreationCollisionOption.ReplaceExisting);
             await FileIO.WriteTextAsync(file, JsonConvert.SerializeObject(rootObj));
 
             Debug.WriteLine("Stocks saved, fuel: " + FuelInfo.AsString());
@@ -222,11 +218,16 @@ public class Stocks {
                 try {
                     if (obj.ContainsKey("cost")) Cost = (double)obj["cost"];
                 }
-                catch (Exception) { }
+                catch (Exception) {
+                    // ignored
+                }
                 try {
                     if (obj.ContainsKey("volume")) Volume = (double)obj["volume"];
                 }
-                catch (Exception) { }
+                catch (Exception) {
+                    // ignored
+                }
+
                 return true;
             }
         }
@@ -234,7 +235,7 @@ public class Stocks {
 
     public class FuelReserved {
 
-        const int RESERVE_TIME_MS = 10_000;  // 5 min (10 sec) + max 30s
+        const int ReserveTimeMs = 10_000;  // 5 min (10 sec) + max 30s
 
         public static Fuel Fuel92 { get; } = new Fuel(FuelInfo.Fuel92);
         public static Fuel Fuel95 { get; } = new Fuel(FuelInfo.Fuel95);
@@ -319,7 +320,7 @@ public class Stocks {
             }
 
             public DateTime dateEnd {
-                get { return dateCreated + TimeSpan.FromMilliseconds(RESERVE_TIME_MS); }
+                get { return dateCreated + TimeSpan.FromMilliseconds(ReserveTimeMs); }
             }
 
             public bool isExpired() {
